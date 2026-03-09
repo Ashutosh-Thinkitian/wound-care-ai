@@ -5,6 +5,7 @@ export interface Session {
   expiresAt: string
   status: 'pending' | 'image_received' | 'analyzing' | 'complete' | 'error'
   qrUrl: string
+  assessmentId?: string
 }
 
 export interface WoundAssessment {
