@@ -9,11 +9,13 @@ import {
   Badge,
   Button,
   Callout,
+  Strong,
 } from '@radix-ui/themes'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   CheckCircledIcon,
+  DownloadIcon,
   ExclamationTriangleIcon,
   InfoCircledIcon,
   DotFilledIcon,
@@ -72,6 +74,19 @@ export default function AssessmentResultPage() {
   const navigate = useNavigate()
   const { assessment, loading, error } = useAssessment(assessmentId)
 
+  const handlePrint = () => {
+    const patientRef = assessment?.patientRef?.trim()
+    const fallback = assessment?.sessionId.slice(0, 8).toUpperCase() ?? 'REPORT'
+    const label = patientRef ? patientRef : fallback
+    const filename = `WoundCare AI_${label}`
+    document.title = filename
+    window.print()
+    // Restore original title after print dialog closes
+    setTimeout(() => {
+      document.title = 'WoundCare AI'
+    }, 2000)
+  }
+
   if (loading) {
     return <LoadingSpinner label="Loading assessment report..." />
   }
@@ -105,6 +120,35 @@ export default function AssessmentResultPage() {
 
   return (
     <Flex direction="column" gap="5">
+      {/* PRINT-ONLY HEADER — hidden on screen, visible when printing */}
+      <Box className="print-header" style={{ display: 'none' }} data-print-only>
+        <Flex justify="between" align="start">
+          <Box>
+            <Heading size="7">WoundCare AI</Heading>
+            <Text size="2" color="gray" as="p">
+              AI-Assisted Wound Assessment Report
+            </Text>
+            <Text size="1" color="gray" as="p">
+              This report is AI-generated and must be reviewed by a licensed healthcare provider
+            </Text>
+          </Box>
+          <Box style={{ textAlign: 'right' }}>
+            <Text size="2" weight="bold">{assessment.woundType}</Text>
+            <Text size="2" color="gray" style={{ display: 'block' }}>
+              Analyzed: {formatDate(assessment.analyzedAt)}
+            </Text>
+            {assessment.patientRef && (
+              <Text size="2" color="gray" style={{ display: 'block' }}>
+                Patient Ref: {assessment.patientRef}
+              </Text>
+            )}
+            <Text size="2" color="gray" style={{ display: 'block' }}>
+              Report ID: {assessment.id}
+            </Text>
+          </Box>
+        </Flex>
+      </Box>
+
       {/* TOP BAR */}
       <Card variant="surface" size="3">
         <Flex
@@ -119,19 +163,28 @@ export default function AssessmentResultPage() {
             <Text size="2" color="gray">
               Analyzed on {formatDate(assessment.analyzedAt)}
             </Text>
+            {assessment.patientRef && (
+              <Text size="2" color="gray">
+                Patient Ref: <Strong>{assessment.patientRef}</Strong>
+              </Text>
+            )}
           </Flex>
 
           <Flex gap="3" align="center" wrap="wrap">
             <SeverityBadge severity={assessment.severity} />
             <Badge
-              color={healingPhaseColors[assessment.healingPhase] ?? 'gray'}
+              color={healingPhaseColors[assessment.healingPhase.toLowerCase()] ?? 'gray'}
               variant="soft"
               size="2"
             >
               {assessment.healingPhase.charAt(0).toUpperCase() +
                 assessment.healingPhase.slice(1)}
             </Badge>
-            <Button variant="soft" onClick={() => navigate(-1)}>
+            <Button className="no-print" variant="soft" color="gray" onClick={handlePrint}>
+              <DownloadIcon />
+              Export PDF
+            </Button>
+            <Button className="no-print" variant="soft" onClick={() => navigate(-1)}>
               <ArrowLeftIcon />
               Back to Session
             </Button>
@@ -141,7 +194,7 @@ export default function AssessmentResultPage() {
 
       {/* RED FLAGS BANNER */}
       {hasRedFlags && (
-        <Callout.Root color="red" size="2">
+        <Callout.Root color="red" size="2" className="red-flags-banner">
           <Callout.Icon>
             <ExclamationTriangleIcon />
           </Callout.Icon>
@@ -418,7 +471,7 @@ export default function AssessmentResultPage() {
       </Grid>
 
       {/* DISCLAIMER BAR */}
-      <Card variant="surface" size="2">
+      <Card variant="surface" size="2" className="print-disclaimer">
         <Flex gap="2" align="center" p="1">
           <InfoCircledIcon color="var(--gray-9)" style={{ flexShrink: 0 }} />
           <Text size="1" color="gray">
