@@ -38,3 +38,8 @@ def update_session(session_id: str, **kwargs: object) -> Optional[Session]:
     for k, v in kwargs.items():
         setattr(session, k, v)
     return session
+
+
+def list_sessions() -> list[Session]:
+    """Return all sessions ordered by created_at descending (newest first)."""
+    return sorted(_sessions.values(), key=lambda s: s.created_at, reverse=True)
