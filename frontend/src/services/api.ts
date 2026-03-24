@@ -7,6 +7,8 @@ const http = axios.create({
 })
 
 export const sessionsApi = {
+  list: () =>
+    http.get<Session[]>('/api/v1/sessions').then(r => r.data),
   create: (patientRef?: string) =>
     http.post<Session>('/api/v1/sessions', { patientRef }).then(r => r.data),
   get: (sessionId: string) =>

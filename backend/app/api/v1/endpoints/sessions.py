@@ -22,6 +22,13 @@ def _to_response(session, frontend_url: str) -> SessionResponse:
     )
 
 
+@router.get("", response_model=list[SessionResponse])
+async def list_sessions():
+    """List all sessions ordered by creation date (newest first)."""
+    sessions = session_service.list_sessions()
+    return [_to_response(s, settings.FRONTEND_URL) for s in sessions]
+
+
 @router.post("", response_model=SessionResponse)
 async def create_session(body: CreateSessionRequest):
     """Create a new wound assessment session."""

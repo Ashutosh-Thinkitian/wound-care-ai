@@ -3,6 +3,7 @@ import AppLayout from '@/components/layout/AppLayout'
 import MobileLayout from '@/components/layout/MobileLayout'
 import DashboardPage from '@/pages/DashboardPage'
 import SessionPage from '@/pages/SessionPage'
+import SessionsPage from '@/pages/SessionsPage'
 import MobileCapturePage from '@/pages/MobileCapturePage'
 import AssessmentResultPage from '@/pages/AssessmentResultPage'
 
@@ -11,6 +12,7 @@ export default function App() {
     <Routes>
       {/* Provider routes — wrapped in AppLayout */}
       <Route path="/" element={<AppLayout><DashboardPage /></AppLayout>} />
+      <Route path="/sessions" element={<AppLayout><SessionsPage /></AppLayout>} />
       <Route path="/session/:sessionId" element={<AppLayout><SessionPage /></AppLayout>} />
       <Route path="/assessment/:assessmentId" element={<AppLayout><AssessmentResultPage /></AppLayout>} />
 
