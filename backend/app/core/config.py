@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_ROLE_KEY: str
     SUPABASE_WOUND_IMAGES_BUCKET: str = "wound-images"
 
+    # Database
+    DATABASE_URL: str
+
     SESSION_TTL_MINUTES: int = 30
 
     class Config:

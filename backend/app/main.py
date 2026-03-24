@@ -9,6 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1 import router as api_v1_router
 from app.core.config import settings
+from app.core.database import Base, engine
+from app.models import db_models  # noqa: F401 — registers models with Base
 
 app = FastAPI(
     title="WoundCare AI",
@@ -28,13 +30,15 @@ app.include_router(api_v1_router, prefix="/api/v1")
 
 
 @app.on_event("startup")
-async def validate_config():
-    """Validate required configuration on startup."""
+async def startup():
+    """Validate config and create database tables on startup."""
     if not settings.GOOGLE_API_KEY:
         raise RuntimeError("GOOGLE_API_KEY is not set in .env")
     if not settings.SUPABASE_URL or "dummy" in settings.SUPABASE_URL:
         raise RuntimeError("SUPABASE_URL is not set or is a dummy value in .env")
-    print("[Startup] Configuration validated successfully")
+
+    Base.metadata.create_all(bind=engine)
+    print("[Startup] Database tables verified/created")
     print(f"[Startup] Google API key: {settings.GOOGLE_API_KEY[:15]}...")
     print(f"[Startup] Supabase URL: {settings.SUPABASE_URL}")
 
