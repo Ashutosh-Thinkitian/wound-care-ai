@@ -6,8 +6,8 @@ class Settings(BaseSettings):
     APP_PORT: int = 8000
     FRONTEND_URL: str = "http://localhost:5173"
 
-    # Anthropic
-    ANTHROPIC_API_KEY: str
+    # Google AI (Gemini)
+    GOOGLE_API_KEY: str
 
     # Supabase
     SUPABASE_URL: str

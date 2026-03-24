@@ -37,10 +37,14 @@ export function useSession(sessionId: string) {
 
         if (s.status === 'complete') {
           stopPolling()
+          console.log('[useSession] Session complete:', JSON.stringify(s))
           // Auto-navigate after 1.5s so user sees the complete state briefly
           timeoutRef.current = setTimeout(() => {
             if (s.assessmentId) {
+              console.log('[useSession] Navigating to /assessment/' + s.assessmentId)
               navigate(`/assessment/${s.assessmentId}`)
+            } else {
+              console.error('[useSession] Assessment ID missing from session response')
             }
           }, 1500)
         } else if (s.status === 'error') {
