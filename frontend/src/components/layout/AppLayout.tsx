@@ -76,6 +76,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     <Flex style={{ minHeight: '100vh' }}>
       {/* Desktop sidebar */}
       <Box
+        data-sidebar
         display={{ initial: 'none', sm: 'block' }}
         position="fixed"
         left="0"
@@ -93,6 +94,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       {/* Mobile top bar */}
       <Box
+        data-topbar
         display={{ initial: 'block', sm: 'none' }}
         position="fixed"
         top="0"
@@ -120,6 +122,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       {/* Mobile sidebar overlay */}
       {mobileOpen && (
         <Box
+          data-mobile-overlay
           display={{ initial: 'block', sm: 'none' }}
           position="fixed"
           top="0"
@@ -155,6 +158,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main content */}
       <Box
+        data-main-content
         className={clsx('page-enter')}
         ml={{ initial: '0', sm: '0' }}
         pt={{ initial: '7', sm: '0' }}

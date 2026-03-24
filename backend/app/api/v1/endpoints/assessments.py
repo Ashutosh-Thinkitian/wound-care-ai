@@ -7,6 +7,7 @@ from typing import Dict
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.assessment import WoundAssessmentResponse
+from app.services import session_service
 
 router = APIRouter()
 
@@ -18,11 +19,16 @@ _session_to_assessment: Dict[str, str] = {}
 def store_assessment(session_id: str, image_url: str, data: dict) -> str:
     """Persist assessment result from the background analysis task."""
     assessment_id = str(uuid.uuid4())
+    patient_ref = None
+    session = session_service.get_session(session_id)
+    if session:
+        patient_ref = session.patient_ref
     _assessments[assessment_id] = {
         "id": assessment_id,
         "sessionId": session_id,
         "imageUrl": image_url,
         "analyzedAt": datetime.utcnow().isoformat(),
+        "patientRef": patient_ref,
         **data,
     }
     _session_to_assessment[session_id] = assessment_id
