@@ -1,18 +1,24 @@
+"""Wound image capture endpoint — accepts uploads and triggers AI analysis."""
+
 import asyncio
 import traceback
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from app.services import session_service
-from app.services.storage_service import upload_wound_image
-from app.services.gemini_service import analyze_wound_image_from_bytes
+
+from fastapi import APIRouter, File, HTTPException, UploadFile
+
 from app.models.session import SessionStatus
+from app.services import session_service
+from app.services.gemini_service import analyze_wound_image_from_bytes
+from app.services.storage_service import upload_wound_image
 
 router = APIRouter()
 
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/heic"}
 MAX_SIZE_MB = 10
 
+
 @router.post("/{session_id}")
 async def upload_wound_image_endpoint(session_id: str, file: UploadFile = File(...)):
+    """Accept a wound image upload, store it, and trigger background AI analysis."""
     print(f"[Capture] Incoming POST /api/v1/capture/{session_id}")
 
     session = session_service.get_session(session_id)
@@ -23,14 +29,12 @@ async def upload_wound_image_endpoint(session_id: str, file: UploadFile = File(.
     if file.content_type not in ALLOWED_TYPES:
         raise HTTPException(400, f"Unsupported file type: {file.content_type}")
 
-    # Read file bytes BEFORE creating background task
     content = await file.read()
     if len(content) > MAX_SIZE_MB * 1024 * 1024:
         raise HTTPException(400, f"File too large (max {MAX_SIZE_MB}MB)")
 
     print(f"[Capture] File received: {file.filename} ({len(content)} bytes, {file.content_type})")
 
-    # Upload to Supabase Storage
     try:
         image_url = upload_wound_image(
             file_bytes=content,
@@ -49,14 +53,13 @@ async def upload_wound_image_endpoint(session_id: str, file: UploadFile = File(.
     )
     print(f"[Capture] Status updated to IMAGE_RECEIVED for {session_id}")
 
-    # Trigger AI analysis in background (pass raw bytes — no disk read needed)
     asyncio.create_task(_run_analysis(session_id, content, file.filename or "wound.jpg", image_url))
 
     return {"message": "Image received. Analysis in progress."}
 
 
 async def _run_analysis(session_id: str, image_bytes: bytes, filename: str, image_url: str):
-    """Background task: send image bytes to Claude, store result."""
+    """Background task: send image bytes to Gemini, store assessment result."""
     session_service.update_session(session_id, status=SessionStatus.ANALYZING)
     print(f"[Capture] Status updated to ANALYZING for {session_id}")
 

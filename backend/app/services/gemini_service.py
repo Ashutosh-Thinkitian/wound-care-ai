@@ -1,8 +1,12 @@
-import google.generativeai as genai
+"""Wound image analysis using Google Gemini Vision API."""
+
 import base64
 import json
 import re
 from pathlib import Path
+
+import google.generativeai as genai
+
 from app.core.config import settings
 
 genai.configure(api_key=settings.GOOGLE_API_KEY)
@@ -47,7 +51,9 @@ USER_PROMPT = """Analyze this wound image and return ONLY a raw JSON object with
   "disclaimer": "AI-generated assessment. Must be reviewed and confirmed by a licensed healthcare provider before any clinical action."
 }"""
 
+
 def _media_type(filename: str) -> str:
+    """Map filename extension to MIME type."""
     ext = Path(filename).suffix.lower()
     return {
         ".jpg": "image/jpeg",
@@ -57,7 +63,12 @@ def _media_type(filename: str) -> str:
         ".heic": "image/heic",
     }.get(ext, "image/jpeg")
 
+
 def analyze_wound_image_from_bytes(image_bytes: bytes, filename: str = "wound.jpg") -> dict:
+    """Send wound image bytes to Gemini and return the parsed JSON assessment.
+
+    This is a synchronous function — call via asyncio.to_thread() from async code.
+    """
     print("🔍 Gemini API call starting...")
 
     model = genai.GenerativeModel(
@@ -83,6 +94,7 @@ def analyze_wound_image_from_bytes(image_bytes: bytes, filename: str = "wound.jp
     raw = response.text.strip()
     print(f"✅ Gemini response received ({len(raw)} chars)")
 
+    # Strip markdown code fences if present
     raw = re.sub(r'^```json\s*', '', raw, flags=re.MULTILINE)
     raw = re.sub(r'^```\s*', '', raw, flags=re.MULTILINE)
     raw = re.sub(r'```$', '', raw, flags=re.MULTILINE).strip()

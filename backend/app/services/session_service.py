@@ -1,13 +1,18 @@
+"""In-memory session management for wound assessment encounters."""
+
 import uuid
 from datetime import datetime, timedelta
 from typing import Dict, Optional
-from app.models.session import Session, SessionStatus
+
 from app.core.config import settings
+from app.models.session import Session, SessionStatus
 
 # In-memory store (replace with Redis/DB in production)
 _sessions: Dict[str, Session] = {}
 
+
 def create_session(patient_ref: Optional[str] = None) -> Session:
+    """Create a new session with a unique ID and expiry time."""
     session_id = str(uuid.uuid4())
     now = datetime.utcnow()
     session = Session(
@@ -19,10 +24,14 @@ def create_session(patient_ref: Optional[str] = None) -> Session:
     _sessions[session_id] = session
     return session
 
+
 def get_session(session_id: str) -> Optional[Session]:
+    """Retrieve a session by ID, or None if not found."""
     return _sessions.get(session_id)
 
-def update_session(session_id: str, **kwargs) -> Optional[Session]:
+
+def update_session(session_id: str, **kwargs: object) -> Optional[Session]:
+    """Update session fields. Returns the updated session or None if not found."""
     session = _sessions.get(session_id)
     if not session:
         return None

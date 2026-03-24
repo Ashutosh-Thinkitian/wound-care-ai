@@ -1,7 +1,10 @@
-from pydantic import BaseModel
-from typing import List, Optional
-from datetime import datetime
+"""Pydantic schemas for the wound assessment API response."""
+
 from enum import Enum
+from typing import List, Optional
+
+from pydantic import BaseModel
+
 
 class WoundDepth(str, Enum):
     SUPERFICIAL = "superficial"
@@ -9,11 +12,13 @@ class WoundDepth(str, Enum):
     FULL_THICKNESS = "full_thickness"
     UNKNOWN = "unknown"
 
+
 class Severity(str, Enum):
     MILD = "mild"
     MODERATE = "moderate"
     SEVERE = "severe"
     CRITICAL = "critical"
+
 
 class HealingPhase(str, Enum):
     INFLAMMATORY = "inflammatory"
@@ -22,11 +27,13 @@ class HealingPhase(str, Enum):
     CHRONIC = "chronic"
     UNKNOWN = "unknown"
 
+
 class ExudateAmount(str, Enum):
     NONE = "none"
     SCANT = "scant"
     MODERATE = "moderate"
     HEAVY = "heavy"
+
 
 class WoundDimensions(BaseModel):
     lengthCm: str
@@ -34,9 +41,11 @@ class WoundDimensions(BaseModel):
     depthCm: str
     note: str
 
+
 class ExudateInfo(BaseModel):
     amount: ExudateAmount
     type: str
+
 
 class WoundAssessmentResponse(BaseModel):
     id: str
