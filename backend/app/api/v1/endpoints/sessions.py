@@ -13,6 +13,7 @@ def _to_response(session, frontend_url: str) -> SessionResponse:
         expiresAt=session.expires_at.isoformat() if session.expires_at else "",
         status=session.status,
         qrUrl=f"{frontend_url}/capture/{session.id}",
+        assessmentId=session.assessment_id,
     )
 
 @router.post("", response_model=SessionResponse)

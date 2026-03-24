@@ -10,11 +10,15 @@ import {
   Badge,
   Callout,
   Strong,
+  Tabs,
 } from '@radix-ui/themes'
 import {
   InfoCircledIcon,
   ArrowRightIcon,
   ArrowLeftIcon,
+  UploadIcon,
+  CheckCircledIcon,
+  MagicWandIcon,
 } from '@radix-ui/react-icons'
 import PageHeader from '@/components/layout/PageHeader'
 import StatusBadge from '@/components/common/StatusBadge'
@@ -22,6 +26,9 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import EmptyState from '@/components/common/EmptyState'
 import QRCodeDisplay from '@/components/qr/QRCodeDisplay'
 import SessionTimeline from '@/components/wound/SessionTimeline'
+import ProviderUpload from '@/components/wound/ProviderUpload'
+import PulsingCard from '@/components/common/PulsingCard'
+import AnalysisProgress from '@/components/common/AnalysisProgress'
 import { useSession } from '@/hooks/useSession'
 
 function useCountdown(expiresAt: string | undefined) {
@@ -77,6 +84,26 @@ export default function SessionPage() {
   const navigate = useNavigate()
   const { session, loading, error, notFound } = useSession(sessionId)
   const { remaining, expired } = useCountdown(session?.expiresAt)
+
+  // Track when analysis just completed for transition animation
+  const [justCompleted, setJustCompleted] = useState(false)
+  const prevStatusRef = useRef<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (
+      prevStatusRef.current === 'analyzing' &&
+      session?.status === 'complete'
+    ) {
+      setJustCompleted(true)
+      const timer = setTimeout(() => {
+        if (session.assessmentId) {
+          navigate(`/assessment/${session.assessmentId}`)
+        }
+      }, 1800)
+      return () => clearTimeout(timer)
+    }
+    prevStatusRef.current = session?.status
+  }, [session?.status, session?.assessmentId, navigate])
 
   // Update document title based on status
   useEffect(() => {
@@ -140,38 +167,61 @@ export default function SessionPage() {
       <PageHeader title="Session" subtitle={subtitle} />
 
       <Grid columns={{ initial: '1', md: '2' }} gap="6">
-        {/* LEFT: QR Code Panel */}
+        {/* LEFT: Tabs for QR Code / Upload */}
         <Card size="3">
-          <Flex direction="column" gap="4" p="2">
-            <Heading size="3">Scan to Capture Wound Image</Heading>
+          <Tabs.Root defaultValue="qr">
+            <Tabs.List>
+              <Tabs.Trigger value="qr">QR Code</Tabs.Trigger>
+              <Tabs.Trigger value="upload">
+                <UploadIcon />
+                Upload Directly
+              </Tabs.Trigger>
+            </Tabs.List>
 
-            <QRCodeDisplay
-              qrUrl={session.qrUrl}
-              sessionId={sessionId}
-              status={session.status}
-            />
+            <Tabs.Content value="qr">
+              <Flex direction="column" gap="4" p="2" pt="4">
+                <Heading size="3">Scan to Capture Wound Image</Heading>
 
-            <Flex direction="column" align="center" gap="2">
-              <StatusBadge status={session.status} />
+                <QRCodeDisplay
+                  qrUrl={session.qrUrl}
+                  sessionId={sessionId}
+                  status={session.status}
+                />
 
-              {expired ? (
-                <Badge color="red" size="2">Session Expired</Badge>
-              ) : (
+                <Flex direction="column" align="center" gap="2">
+                  <StatusBadge status={session.status} />
+
+                  {expired ? (
+                    <Badge color="red" size="2">Session Expired</Badge>
+                  ) : (
+                    <Text size="2" color="gray">
+                      Session expires in: {remaining}
+                    </Text>
+                  )}
+                </Flex>
+
+                <Callout.Root color="blue" size="1">
+                  <Callout.Icon>
+                    <InfoCircledIcon />
+                  </Callout.Icon>
+                  <Callout.Text>
+                    Ask the patient or bedside nurse to scan this QR code with their phone camera
+                  </Callout.Text>
+                </Callout.Root>
+              </Flex>
+            </Tabs.Content>
+
+            <Tabs.Content value="upload">
+              <Flex direction="column" gap="4" p="2" pt="4">
+                <Heading size="3">Upload Wound Image</Heading>
                 <Text size="2" color="gray">
-                  Session expires in: {remaining}
+                  Upload the wound image directly from this device instead of using the QR code.
                 </Text>
-              )}
-            </Flex>
 
-            <Callout.Root color="blue" size="1">
-              <Callout.Icon>
-                <InfoCircledIcon />
-              </Callout.Icon>
-              <Callout.Text>
-                Ask the patient or bedside nurse to scan this QR code with their phone camera
-              </Callout.Text>
-            </Callout.Root>
-          </Flex>
+                <ProviderUpload sessionId={sessionId} status={session.status} />
+              </Flex>
+            </Tabs.Content>
+          </Tabs.Root>
         </Card>
 
         {/* RIGHT: Status Timeline */}
@@ -185,12 +235,56 @@ export default function SessionPage() {
               </Text>
             )}
 
+            {/* AI Analysis In Progress panel */}
+            {session.status === 'analyzing' && (
+              <PulsingCard active>
+                <Flex direction="column" gap="3" align="center" py="2">
+                  <MagicWandIcon
+                    width={32}
+                    height={32}
+                    color="var(--blue-9)"
+                  />
+                  <Heading size="4" align="center">
+                    AI Analysis In Progress
+                  </Heading>
+                  <Text size="2" color="gray" align="center">
+                    Gemini is analyzing the wound image. This usually takes
+                    15–30 seconds.
+                  </Text>
+                  <AnalysisProgress
+                    size="lg"
+                    showProgressBar
+                    durationSeconds={25}
+                  />
+                </Flex>
+              </PulsingCard>
+            )}
+
+            {/* Completion transition flash */}
+            {justCompleted && session.status === 'complete' && (
+              <Flex
+                direction="column"
+                gap="3"
+                style={{ animation: 'successFlash 1s ease-out' }}
+              >
+                <Callout.Root color="green" size="1">
+                  <Callout.Icon>
+                    <CheckCircledIcon />
+                  </Callout.Icon>
+                  <Callout.Text>
+                    Analysis complete! Loading your report...
+                  </Callout.Text>
+                </Callout.Root>
+              </Flex>
+            )}
+
             <SessionTimeline status={session.status} />
 
-            {session.status === 'complete' && (
+            {session.status === 'complete' && !justCompleted && (
               <Button
                 size="3"
                 color="green"
+                disabled={!session.assessmentId}
                 onClick={() => {
                   if (session.assessmentId) {
                     navigate(`/assessment/${session.assessmentId}`)

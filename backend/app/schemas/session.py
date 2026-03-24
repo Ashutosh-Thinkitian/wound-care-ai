@@ -13,3 +13,4 @@ class SessionResponse(BaseModel):
     expiresAt: str
     status: SessionStatus
     qrUrl: str
+    assessmentId: Optional[str] = None
