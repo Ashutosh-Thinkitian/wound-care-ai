@@ -17,6 +17,8 @@
 **/.env
 **/.env.local
 **/.env.production
+frontend/.env.local
+backend/.env
 
 # ===== OS =====
 .DS_Store

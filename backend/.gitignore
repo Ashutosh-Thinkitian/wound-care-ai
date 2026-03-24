@@ -17,6 +17,8 @@ ENV/
 .env
 .env.local
 .env.production
+.env.staging
+*.env
 
 # Distribution / packaging
 dist/
