@@ -5,6 +5,7 @@ export interface Session {
   expiresAt: string
   status: 'pending' | 'image_received' | 'analyzing' | 'complete' | 'error'
   qrUrl: string
+  assessmentId?: string
 }
 
 export interface WoundAssessment {
@@ -12,10 +13,11 @@ export interface WoundAssessment {
   sessionId: string
   imageUrl: string
   analyzedAt: string
+  patientRef?: string
   woundType: string
   probableCause: string
   estimatedDimensions: WoundDimensions
-  woundDepth: 'superficial' | 'partial_thickness' | 'full_thickness' | 'unknown'
+  woundDepth: string
   woundStage?: string
   woundBed: string
   exudate: ExudateInfo
@@ -23,8 +25,8 @@ export interface WoundAssessment {
   infectionSigns: string[]
   diagnosis: string
   differentialDiagnosis: string[]
-  severity: 'mild' | 'moderate' | 'severe' | 'critical'
-  healingPhase: 'inflammatory' | 'proliferative' | 'remodeling' | 'chronic' | 'unknown'
+  severity: string
+  healingPhase: string
   immediateActions: string[]
   dressingSuggestions: string[]
   referralRecommendations: string[]
@@ -42,6 +44,6 @@ export interface WoundDimensions {
 }
 
 export interface ExudateInfo {
-  amount: 'none' | 'scant' | 'moderate' | 'heavy'
+  amount: string
   type: string
 }

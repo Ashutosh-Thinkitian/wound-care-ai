@@ -1,10 +1,15 @@
-from pydantic import BaseModel
+"""Pydantic schemas for session API request/response."""
+
 from typing import Optional
-from datetime import datetime
+
+from pydantic import BaseModel
+
 from app.models.session import SessionStatus
+
 
 class CreateSessionRequest(BaseModel):
     patientRef: Optional[str] = None
+
 
 class SessionResponse(BaseModel):
     id: str
@@ -13,3 +18,4 @@ class SessionResponse(BaseModel):
     expiresAt: str
     status: SessionStatus
     qrUrl: str
+    assessmentId: Optional[str] = None

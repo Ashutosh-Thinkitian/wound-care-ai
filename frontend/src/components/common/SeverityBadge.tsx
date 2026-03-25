@@ -4,7 +4,7 @@ import clsx from 'clsx'
 type Severity = 'mild' | 'moderate' | 'severe' | 'critical'
 
 interface SeverityBadgeProps {
-  severity: Severity
+  severity: string
 }
 
 const severityConfig: Record<Severity, { color: 'green' | 'amber' | 'orange' | 'red'; label: string }> = {
@@ -14,14 +14,17 @@ const severityConfig: Record<Severity, { color: 'green' | 'amber' | 'orange' | '
   critical: { color: 'red', label: 'Critical' },
 }
 
+const fallback = { color: 'gray' as const, label: 'Unknown' }
+
 export default function SeverityBadge({ severity }: SeverityBadgeProps) {
-  const config = severityConfig[severity]
+  const key = severity.toLowerCase() as Severity
+  const config = severityConfig[key] ?? fallback
   return (
     <Badge
       color={config.color}
       variant="solid"
       size="2"
-      className={clsx(severity === 'critical' && 'severity-critical-pulse')}
+      className={clsx(key === 'critical' && 'severity-critical-pulse')}
     >
       {config.label}
     </Badge>

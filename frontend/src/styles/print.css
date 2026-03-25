@@ -1,0 +1,120 @@
+@media print {
+
+  /* Hide everything that is not the report */
+  nav,
+  aside,
+  header,
+  [data-sidebar],
+  [data-topbar],
+  .no-print,
+  button,
+  [role="navigation"] {
+    display: none !important;
+  }
+
+  /* Show print-only elements */
+  [data-print-only] {
+    display: block !important;
+  }
+
+  /* Reset page */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    font-size: 11pt !important;
+    color: black !important;
+    width: 100% !important;
+  }
+
+  /* Page margins */
+  @page {
+    margin: 1.5cm 2cm;
+    size: A4 portrait;
+  }
+
+  /* Make the main content full width */
+  main, [data-main-content] {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Override the page-enter class sidebar margin */
+  .page-enter {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Cards become plain bordered boxes */
+  .rt-Card {
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+    break-inside: avoid !important;
+    margin-bottom: 12pt !important;
+    padding: 12pt !important;
+    background: white !important;
+  }
+
+  /* Page break rules */
+  .print-break-before {
+    break-before: page !important;
+  }
+
+  .print-no-break {
+    break-inside: avoid !important;
+  }
+
+  /* Red flags banner — keep red background when printing */
+  .red-flags-banner {
+    background-color: #fef2f2 !important;
+    border: 2px solid #ef4444 !important;
+    padding: 12pt !important;
+    margin-bottom: 12pt !important;
+  }
+
+  /* Two column grid becomes single column for print */
+  .rt-Grid {
+    display: block !important;
+  }
+
+  /* Report header */
+  .print-header {
+    border-bottom: 2pt solid #1d4ed8 !important;
+    padding-bottom: 8pt !important;
+    margin-bottom: 16pt !important;
+  }
+
+  /* Severity badge — keep colors */
+  .rt-Badge {
+    border: 1px solid currentColor !important;
+    padding: 2pt 6pt !important;
+  }
+
+  /* Disclaimer */
+  .print-disclaimer {
+    border-top: 1pt solid #d1d5db !important;
+    margin-top: 16pt !important;
+    padding-top: 8pt !important;
+    font-size: 8pt !important;
+    color: #6b7280 !important;
+  }
+
+  /* Images */
+  img {
+    max-width: 100% !important;
+    max-height: 300pt !important;
+    object-fit: contain !important;
+  }
+
+  /* Mobile overlay — hide */
+  [data-mobile-overlay] {
+    display: none !important;
+  }
+}
