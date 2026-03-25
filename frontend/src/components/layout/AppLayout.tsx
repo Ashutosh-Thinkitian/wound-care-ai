@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Box, Flex, Text, Button, Badge, IconButton } from '@radix-ui/themes'
-import { Cross2Icon, HamburgerMenuIcon, DashboardIcon, ReaderIcon, Cross1Icon } from '@radix-ui/react-icons'
+import { HamburgerMenuIcon, DashboardIcon, ReaderIcon, Cross1Icon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
 
 interface AppLayoutProps {
@@ -24,46 +24,50 @@ export default function AppLayout({ children }: AppLayoutProps) {
   }
 
   const sidebar = (
-    <Flex direction="column" justify="between" height="100%" p="4">
+    <Flex direction="column" justify="between" height="100%">
       <Box>
         {/* Logo */}
-        <Flex align="center" gap="2" mb="6">
-          <Flex
-            align="center"
-            justify="center"
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 'var(--radius-2)',
-              backgroundColor: 'var(--blue-9)',
-              color: 'white',
-            }}
-          >
-            <Cross2Icon width={16} height={16} />
-          </Flex>
-          <Text size="3" weight="bold" color="blue">
-            WoundCare AI
-          </Text>
+        <Flex align="center" gap="2" style={{ padding: '12px 16px', borderBottom: '0.5px solid var(--gray-4)' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 56 56" style={{ flexShrink: 0 }}>
+            <rect width="56" height="56" rx="14" fill="#185FA5"/>
+            <rect x="25" y="10" width="6" height="36" rx="3" fill="#ffffff"/>
+            <rect x="12" y="25" width="32" height="6" rx="3" fill="#ffffff"/>
+            <circle cx="42" cy="14" r="7" fill="#10b981"/>
+            <circle cx="42" cy="14" r="3.5" fill="#ffffff"/>
+          </svg>
+          <Box>
+            <Flex align="center" gap="2">
+              <Text weight="bold" size="3" style={{ color: '#0c1a2e', letterSpacing: '-0.3px' }}>WoundCare</Text>
+              <Box style={{ background: '#E6F1FB', borderRadius: '4px', padding: '1px 7px' }}>
+                <Text size="1" weight="bold" style={{ color: '#185FA5', letterSpacing: '0.5px' }}>AI</Text>
+              </Box>
+            </Flex>
+            <Text size="1" style={{ color: '#5a7a9c', letterSpacing: '0.5px', display: 'block' }}>
+              AI-Powered Assessment
+            </Text>
+          </Box>
         </Flex>
 
-        {/* Nav links */}
-        <Flex direction="column" gap="1">
-          {navItems.map((item) => (
-            <Button
-              key={item.path}
-              variant={location.pathname === item.path ? 'soft' : 'ghost'}
-              style={{ justifyContent: 'flex-start' }}
-              onClick={() => handleNav(item.path)}
-            >
-              {item.icon}
-              {item.label}
-            </Button>
-          ))}
-        </Flex>
+        <Box p="4">
+          {/* Nav links */}
+          <Flex direction="column" gap="1">
+            {navItems.map((item) => (
+              <Button
+                key={item.path}
+                variant={location.pathname === item.path ? 'soft' : 'ghost'}
+                style={{ justifyContent: 'flex-start' }}
+                onClick={() => handleNav(item.path)}
+              >
+                {item.icon}
+                {item.label}
+              </Button>
+            ))}
+          </Flex>
+        </Box>
       </Box>
 
       {/* Bottom disclaimer */}
-      <Flex direction="column" gap="2" align="start">
+      <Flex direction="column" gap="2" align="start" p="4">
         <Badge color="amber">AI Assisted</Badge>
         <Text size="1" color="gray">
           Always verify with a licensed provider
