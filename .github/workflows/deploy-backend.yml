@@ -3,7 +3,7 @@ name: Deploy Backend to Render
 on:
   push:
     branches:
-      - features
+      - master
     paths:
       - 'backend/**'
       - '.github/workflows/deploy-backend.yml'
