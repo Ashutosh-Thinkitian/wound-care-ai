@@ -1,8 +1,7 @@
 # Deployment Guide
 
 ## Status
-
-This application is currently running in local development mode. This document will be updated with full deployment instructions.
+Backend deploys to Render. Frontend deploys to Vercel. Database and Storage on Supabase.
 
 ## Planned Deployment Targets
 

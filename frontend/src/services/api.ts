@@ -6,24 +6,33 @@ const http = axios.create({
   timeout: 60_000,
 })
 
+http.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', error.response?.status, error.response?.data)
+    return Promise.reject(error)
+  }
+)
+
 export const sessionsApi = {
-  list: () =>
-    http.get<Session[]>('/api/v1/sessions').then(r => r.data),
   create: (patientRef?: string) =>
     http.post<Session>('/api/v1/sessions', { patientRef }).then(r => r.data),
   get: (sessionId: string) =>
     http.get<Session>(`/api/v1/sessions/${sessionId}`).then(r => r.data),
   poll: (sessionId: string) =>
     http.get<Session>(`/api/v1/sessions/${sessionId}/status`).then(r => r.data),
+  list: () =>
+    http.get<Session[]>('/api/v1/sessions').then(r => r.data),
 }
 
 export const captureApi = {
   uploadImage: (sessionId: string, file: File) => {
     const form = new FormData()
     form.append('file', file)
-    return http.post<{ message: string }>(`/api/v1/capture/${sessionId}`, form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }).then(r => r.data)
+    return http.post<{ message: string }>(
+      `/api/v1/capture/${sessionId}`,
+      form
+    ).then(r => r.data)
   },
 }
 
