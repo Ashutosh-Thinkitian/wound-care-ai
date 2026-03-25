@@ -1,0 +1,61 @@
+name: Deploy Backend to Render
+
+on:
+  push:
+    branches:
+      - features
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  deploy:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          pip install -r requirements.txt
+
+      - name: Verify Python syntax
+        working-directory: backend
+        run: |
+          python -m py_compile app/main.py
+          python -m py_compile app/core/config.py
+          python -m py_compile app/core/database.py
+          python -m py_compile app/services/gemini_service.py
+          python -m py_compile app/services/session_service.py
+          python -m py_compile app/services/storage_service.py
+          python -m py_compile app/api/v1/endpoints/sessions.py
+          python -m py_compile app/api/v1/endpoints/capture.py
+          python -m py_compile app/api/v1/endpoints/assessments.py
+          echo "✅ All Python files compiled successfully"
+
+      - name: Trigger Render Deploy
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          curl -X POST "$RENDER_DEPLOY_HOOK" \
+            -H "Content-Type: application/json" \
+            --fail \
+            --silent \
+            --show-error
+          echo "✅ Render deploy triggered"
+
+      - name: Notify success
+        if: success()
+        run: echo "🚀 Backend deployment triggered successfully"
+
+      - name: Notify failure
+        if: failure()
+        run: echo "❌ Backend deployment failed — check logs above"
