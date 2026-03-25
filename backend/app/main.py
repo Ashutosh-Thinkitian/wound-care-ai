@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.v1 import router as api_v1_router
-from app.core.database import engine, Base
 from app.models import db_models  # noqa
 
 import threading
@@ -35,8 +34,17 @@ app.include_router(api_v1_router, prefix="/api/v1")
 async def startup():
     if not settings.GOOGLE_API_KEY:
         raise RuntimeError("GOOGLE_API_KEY is not set")
-    Base.metadata.create_all(bind=engine)
-    print("✅ Database tables verified")
+    try:
+        from sqlalchemy import text
+        from app.core.database import SessionLocal
+        db = SessionLocal()
+        try:
+            db.execute(text("SELECT COUNT(*) FROM sessions"))
+            print("✅ Database connection verified — sessions table exists")
+        finally:
+            db.close()
+    except Exception as e:
+        print(f"⚠️ Database check warning: {e}")
 
 @app.get("/health")
 async def health():
