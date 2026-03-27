@@ -18,4 +18,5 @@ class SessionResponse(BaseModel):
     expiresAt: str
     status: SessionStatus
     qrUrl: str
+    imageUrl: Optional[str] = None
     assessmentId: Optional[str] = None
