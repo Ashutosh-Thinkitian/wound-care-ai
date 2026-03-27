@@ -1,2 +1,6 @@
 .vercel
 .env*.local
+
+# front-end-dev (auto-generated)
+.claude/commands/front-end-dev.md
+.claude/agents/jira-ticket-implementer.md
