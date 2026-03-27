@@ -56,17 +56,34 @@ export default function ProviderUpload({ sessionId, status }: ProviderUploadProp
 
   const alreadySubmitted = status !== 'pending'
 
-  // SUCCESS state
+  // SUCCESS state — keep image visible with success callout
   if (uploadState === 'success') {
     return (
-      <Callout.Root color="green" size="2">
-        <Callout.Icon>
-          <CheckCircledIcon />
-        </Callout.Icon>
-        <Callout.Text>
-          Image submitted successfully! The AI is analyzing the wound.
-        </Callout.Text>
-      </Callout.Root>
+      <Flex direction="column" gap="4">
+        {previewUrl && (
+          <Box style={{ borderRadius: 'var(--radius-3)', overflow: 'hidden' }}>
+            <img
+              src={previewUrl}
+              alt="Wound preview"
+              style={{
+                width: '100%',
+                maxHeight: 280,
+                objectFit: 'cover',
+                display: 'block',
+                borderRadius: 'var(--radius-3)',
+              }}
+            />
+          </Box>
+        )}
+        <Callout.Root color="green" size="2">
+          <Callout.Icon>
+            <CheckCircledIcon />
+          </Callout.Icon>
+          <Callout.Text>
+            Image submitted successfully! The AI is analyzing the wound.
+          </Callout.Text>
+        </Callout.Root>
+      </Flex>
     )
   }
 
@@ -89,7 +106,7 @@ export default function ProviderUpload({ sessionId, status }: ProviderUploadProp
               alt="Wound preview"
               style={{
                 width: '100%',
-                maxHeight: 400,
+                maxHeight: 280,
                 objectFit: 'cover',
                 display: 'block',
                 borderRadius: 'var(--radius-3)',
@@ -149,10 +166,25 @@ export default function ProviderUpload({ sessionId, status }: ProviderUploadProp
     )
   }
 
-  // ERROR state
+  // ERROR state — keep image visible with error message
   if (uploadState === 'error') {
     return (
       <Flex direction="column" gap="3">
+        {previewUrl && (
+          <Box style={{ borderRadius: 'var(--radius-3)', overflow: 'hidden' }}>
+            <img
+              src={previewUrl}
+              alt="Wound preview"
+              style={{
+                width: '100%',
+                maxHeight: 280,
+                objectFit: 'cover',
+                display: 'block',
+                borderRadius: 'var(--radius-3)',
+              }}
+            />
+          </Box>
+        )}
         <Callout.Root color="red" size="2">
           <Callout.Text>{uploadError ?? 'Upload failed.'}</Callout.Text>
         </Callout.Root>
