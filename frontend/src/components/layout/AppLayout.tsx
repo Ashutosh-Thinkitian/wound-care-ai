@@ -89,7 +89,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           width: 'var(--sidebar-width)',
           height: '100vh',
           borderRight: '1px solid var(--gray-a5)',
-          backgroundColor: 'var(--color-background)',
+          backgroundColor: '#FFFFFF',
           zIndex: 10,
         }}
       >
@@ -107,7 +107,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         p="3"
         style={{
           borderBottom: '1px solid var(--gray-a5)',
-          backgroundColor: 'var(--color-background)',
+          backgroundColor: '#FFFFFF',
           zIndex: 20,
         }}
       >
@@ -151,7 +151,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             style={{
               width: 'var(--sidebar-width)',
               height: '100vh',
-              backgroundColor: 'var(--color-background)',
+              backgroundColor: '#FFFFFF',
               zIndex: 16,
             }}
           >
@@ -170,6 +170,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           marginLeft: 'var(--sidebar-width)',
           width: 'calc(100% - var(--sidebar-width))',
           minHeight: '100vh',
+          background: 'linear-gradient(160deg, #F8F8F5 0%, #F2F2EE 50%, #F5F3F0 100%)',
         }}
       >
         {/* Override margin on mobile via media query inline won't work, use responsive display */}
