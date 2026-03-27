@@ -1,26 +1,23 @@
 @media print {
 
-  /* Hide everything that is not the report */
-  nav,
-  aside,
-  header,
-  [data-sidebar],
-  [data-topbar],
-  .no-print,
-  button,
-  [role="navigation"] {
-    display: none !important;
-  }
-
-  /* Show print-only elements */
-  [data-print-only] {
-    display: block !important;
-  }
-
-  /* Reset page */
+  /* ─── Color rendering ─── */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    background-image: none !important;
+  }
+
+  /* Keep badge background colors after wildcard reset */
+  .rt-Badge {
+    background-color: inherit !important;
+    border: 1px solid currentColor !important;
+    padding: 2pt 6pt !important;
+  }
+
+  /* ─── Page setup ─── */
+  @page {
+    size: A4 portrait;
+    margin: 1.5cm 2cm;
   }
 
   html, body {
@@ -28,92 +25,192 @@
     padding: 0 !important;
     background: white !important;
     font-size: 11pt !important;
-    color: black !important;
+    color: #111 !important;
     width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
   }
 
-  /* Page margins */
-  @page {
-    margin: 1.5cm 2cm;
-    size: A4 portrait;
+  h1, h2, h3, h4 {
+    color: #111 !important;
   }
 
-  /* Make the main content full width */
+  /* ─── Hide all UI chrome ─── */
+  nav,
+  aside,
+  header,
+  [data-sidebar],
+  [data-topbar],
+  [data-mobile-overlay],
+  .no-print,
+  .screen-top-bar,
+  button,
+  [role="navigation"],
+  .rt-TabsList,
+  .rt-TabsTrigger {
+    display: none !important;
+  }
+
+  /* Hide scrollbars */
+  *::-webkit-scrollbar {
+    display: none !important;
+  }
+  * {
+    scrollbar-width: none !important;
+  }
+
+  /* ─── Show print-only elements ─── */
+  [data-print-only] {
+    display: block !important;
+  }
+
+  .print-only-content {
+    display: block !important;
+  }
+
+  /* ─── Layout reset ─── */
   main, [data-main-content] {
     margin-left: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
-  }
-
-  /* Override the page-enter class sidebar margin */
-  .page-enter {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-
-  /* Cards become plain bordered boxes */
-  .rt-Card {
-    border: 1px solid #d1d5db !important;
-    box-shadow: none !important;
-    break-inside: avoid !important;
-    margin-bottom: 12pt !important;
-    padding: 12pt !important;
     background: white !important;
   }
 
-  /* Page break rules */
+  .page-enter {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding-top: 0 !important;
+  }
+
+  /* ─── Cards — compact bordered boxes ─── */
+  .rt-Card,
+  [class*="Card"] {
+    padding: 10pt 12pt !important;
+    margin-bottom: 10pt !important;
+    break-inside: avoid !important;
+    background: white !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: 0.5px solid #e5e7eb !important;
+    border-radius: 6pt !important;
+  }
+
+  /* ─── Compact print header ─── */
+  .print-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    border-bottom: 3pt solid #1d4ed8 !important;
+    padding-bottom: 8pt !important;
+    margin-bottom: 10pt !important;
+  }
+
+  [data-print-only] h1,
+  [data-print-only] .print-brand {
+    font-size: 18pt !important;
+    margin: 0 !important;
+  }
+
+  [data-print-only] p,
+  [data-print-only] span {
+    font-size: 9pt !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+  }
+
+  /* ─── Tighten Radix layout gaps ─── */
+  .rt-Grid {
+    gap: 8pt !important;
+  }
+
+  .rt-Flex {
+    gap: 4pt !important;
+  }
+
+  /* ─── Print-only content spacing ─── */
+  .print-only-content > * {
+    margin-bottom: 12pt !important;
+  }
+
+  .print-only-content h3,
+  .print-only-content h4 {
+    margin-top: 8pt !important;
+    margin-bottom: 4pt !important;
+  }
+
+  .print-only-content p,
+  .print-only-content span {
+    margin: 0 !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Grids inside print-only-content should stay as grid */
+  .print-only-content .rt-Grid {
+    display: grid !important;
+  }
+
+  /* ─── Section headings ─── */
+  .print-only-content .print-section-heading {
+    font-size: 13pt !important;
+    font-weight: 600 !important;
+    color: #1e3a5f !important;
+    border-bottom: 1pt solid #e5e7eb !important;
+    padding-bottom: 4pt !important;
+    margin-bottom: 8pt !important;
+    margin-top: 0 !important;
+  }
+
+  /* ─── Red flags — keep background ─── */
+  .red-flags-banner {
+    background-color: #fef2f2 !important;
+    border: 2px solid #ef4444 !important;
+    padding: 12pt !important;
+    margin-bottom: 10pt !important;
+  }
+
+  /* ─── Images ─── */
+  img {
+    max-width: 100% !important;
+    display: block !important;
+  }
+
+  [data-print-wound-image="true"] {
+    display: block !important;
+    break-inside: avoid !important;
+  }
+
+  [data-print-wound-image="true"] img {
+    display: block !important;
+    max-width: 100% !important;
+    max-height: 280px !important;
+    object-fit: contain !important;
+    border-radius: 8px !important;
+  }
+
+  /* ─── Page break rules ─── */
   .print-break-before {
-    break-before: page !important;
+    break-before: auto !important;
+  }
+
+  .print-section-break {
+    break-before: auto !important;
   }
 
   .print-no-break {
     break-inside: avoid !important;
   }
 
-  /* Red flags banner — keep red background when printing */
-  .red-flags-banner {
-    background-color: #fef2f2 !important;
-    border: 2px solid #ef4444 !important;
-    padding: 12pt !important;
-    margin-bottom: 12pt !important;
-  }
-
-  /* Two column grid becomes single column for print */
-  .rt-Grid {
-    display: block !important;
-  }
-
-  /* Report header */
-  .print-header {
-    border-bottom: 2pt solid #1d4ed8 !important;
-    padding-bottom: 8pt !important;
-    margin-bottom: 16pt !important;
-  }
-
-  /* Severity badge — keep colors */
-  .rt-Badge {
-    border: 1px solid currentColor !important;
-    padding: 2pt 6pt !important;
-  }
-
-  /* Disclaimer */
+  /* ─── Disclaimer ─── */
   .print-disclaimer {
     border-top: 1pt solid #d1d5db !important;
-    margin-top: 16pt !important;
-    padding-top: 8pt !important;
+    margin-top: 12pt !important;
+    padding-top: 6pt !important;
     font-size: 8pt !important;
     color: #6b7280 !important;
   }
 
-  /* Images */
-  img {
-    max-width: 100% !important;
-    max-height: 300pt !important;
-    object-fit: contain !important;
-  }
-
-  /* Mobile overlay — hide */
+  /* ─── Mobile overlay — hide ─── */
   [data-mobile-overlay] {
     display: none !important;
   }

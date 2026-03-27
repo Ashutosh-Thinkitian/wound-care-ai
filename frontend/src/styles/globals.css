@@ -121,6 +121,11 @@ a {
   transform: scale(0.97) !important;
 }
 
+/* Print-only content — hidden on screen, shown during print */
+.print-only-content {
+  display: none;
+}
+
 /* Utility helpers */
 .visually-hidden {
   position: absolute;

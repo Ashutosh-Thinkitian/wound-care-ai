@@ -28,6 +28,8 @@ import {
   InfoCircledIcon,
   LightningBoltIcon,
   MagnifyingGlassIcon,
+  BarChartIcon,
+  IdCardIcon,
   MixerHorizontalIcon,
   RulerSquareIcon,
 } from '@radix-ui/react-icons'
@@ -96,7 +98,7 @@ function DataItemBadge({ label, children, alt }: { label: string; children: Reac
   )
 }
 
-function ChartPlaceholder({ label }: { label: string }) {
+function ChartPlaceholder({ label, icon }: { label: string; icon: React.ReactNode }) {
   return (
     <Box
       style={{
@@ -112,8 +114,11 @@ function ChartPlaceholder({ label }: { label: string }) {
         backgroundColor: 'var(--gray-2)',
       }}
     >
-      <Text size="1" color="gray" weight="bold" style={{ textTransform: 'uppercase' }}>{label}</Text>
-      <Text size="1" color="gray" style={{ marginTop: 4 }}>Chart coming soon</Text>
+      <Flex align="center" gap="1" mb="1">
+        <Box style={{ color: 'var(--gray-8)', display: 'flex' }}>{icon}</Box>
+        <Text size="1" color="gray" weight="bold" style={{ textTransform: 'uppercase' }}>{label}</Text>
+      </Flex>
+      <Text size="1" color="gray">Chart coming soon</Text>
     </Box>
   )
 }
@@ -174,7 +179,7 @@ export default function AssessmentResultPage() {
       </Box>
 
       {/* TOP BAR */}
-      <Card variant="surface" size="3">
+      <Card variant="surface" size="3" className="screen-top-bar">
         <Flex justify="between" align="center" wrap="wrap" gap="4" p="1">
           <Flex direction="column" gap="1" style={{ flex: 1, minWidth: 0 }}>
             <Heading size="6" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -192,8 +197,8 @@ export default function AssessmentResultPage() {
         </Flex>
       </Card>
 
-      {/* TABBED CONTENT */}
-      <Card size="3">
+      {/* TABBED CONTENT — hidden during print, replaced by flat print-only section */}
+      <Card size="3" className="no-print">
         <Tabs.Root defaultValue="summary">
           <Tabs.List size="2" style={{ borderBottom: '1px solid var(--gray-4)', width: '100%' }}>
             <Tabs.Trigger value="summary">Wound Summary</Tabs.Trigger>
@@ -204,17 +209,15 @@ export default function AssessmentResultPage() {
           {/* ─── TAB 1: WOUND SUMMARY ─── */}
           <Tabs.Content value="summary">
             <Flex direction="column" gap="5" pt="4">
-              <Text size="1" weight="bold" style={{ color: 'var(--gray-8)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                Initial Assessment — {formatShortDate(assessment.analyzedAt)}
-              </Text>
+              <SectionHeading icon={<IdCardIcon />} iconBg="#EFF6FF" iconColor="#185FA5" title={`Initial Assessment — ${formatShortDate(assessment.analyzedAt)}`} />
 
               <Grid columns={{ initial: '1', md: '2' }} gap="5" style={{ alignItems: 'start' }}>
-                <Box style={{ borderRadius: '16px', overflow: 'hidden', border: '0.5px solid var(--gray-4)' }}>
-                  <img src={assessment.imageUrl} alt="Wound image" style={{ width: '100%', height: '380px', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
+                <Box data-print-wound-image="true" style={{ borderRadius: '16px', overflow: 'hidden', border: '0.5px solid var(--gray-4)' }}>
+                  <img src={assessment.imageUrl} alt="Wound image" style={{ width: '100%', height: '100%', minHeight: '320px', maxHeight: '500px', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
                 </Box>
 
-                <Box style={{ background: 'var(--gray-1)', borderRadius: '12px', padding: '20px', height: '380px', overflowY: 'auto', overflowX: 'hidden' }}>
-                  <Grid columns="2" gap="4">
+                <Box style={{ background: 'var(--gray-1)', borderRadius: '12px', padding: '20px', minHeight: '320px' }}>
+                  <Grid columns="2" gap="4" style={{ rowGap: '16px' }}>
                     <Box>
                       <Text size="1" weight="bold" style={labelStyle}>Onset Date</Text>
                       <Badge color="amber" variant="soft" size="2">{formatShortDate(assessment.analyzedAt)}</Badge>
@@ -251,7 +254,7 @@ export default function AssessmentResultPage() {
                       <Separator size="4" my="2" />
                       <Text size="1" weight="bold" style={labelStyle}>Diagnosis</Text>
                       <Box style={{ borderLeft: '3px solid var(--blue-6)', paddingLeft: '12px' }}>
-                        <Text size="2" color="blue">{assessment.diagnosis.length > 120 ? assessment.diagnosis.slice(0, 120) + '...' : assessment.diagnosis}</Text>
+                        <Text size="2" color="blue">{assessment.diagnosis}</Text>
                       </Box>
                     </Box>
                     <Box style={{ gridColumn: 'span 2' }}>
@@ -263,12 +266,12 @@ export default function AssessmentResultPage() {
               </Grid>
 
               <Box mb="5">
-                <Text size="2" color="blue" weight="medium" style={{ display: 'block' }}>Wound progression tracking</Text>
+                <SectionHeading icon={<BarChartIcon />} iconBg="#F0FDF4" iconColor="#16a34a" title="Wound Progression Tracking" />
                 <Text size="2" color="gray" mb="3" style={{ display: 'block' }}>Tracking wound metrics across follow-up visits</Text>
                 <Grid columns={{ initial: '1', sm: '3' }} gap="3">
-                  <ChartPlaceholder label="Area (cm²)" />
-                  <ChartPlaceholder label="Depth (cm)" />
-                  <ChartPlaceholder label="Volume (cm³)" />
+                  <ChartPlaceholder label="Area (cm²)" icon={<RulerSquareIcon width={12} height={12} />} />
+                  <ChartPlaceholder label="Depth (cm)" icon={<RulerSquareIcon width={12} height={12} />} />
+                  <ChartPlaceholder label="Volume (cm³)" icon={<RulerSquareIcon width={12} height={12} />} />
                 </Grid>
               </Box>
             </Flex>
@@ -524,6 +527,154 @@ export default function AssessmentResultPage() {
           </Tabs.Content>
         </Tabs.Root>
       </Card>
+
+      {/* ═══ PRINT-ONLY FLAT LAYOUT ═══ */}
+      <Box className="print-only-content">
+        {/* 1. Wound Image */}
+        <Box style={{ marginBottom: '16pt' }}>
+          <img
+            src={assessment.imageUrl}
+            alt="Wound image"
+            style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', borderRadius: '8px', display: 'block' }}
+          />
+        </Box>
+
+        {/* 2. Metadata Grid */}
+        <Box style={{ marginBottom: '16pt' }}>
+          <Heading size="4" className="print-section-heading">Wound Summary</Heading>
+          <Grid columns="2" gap="3" style={{ rowGap: '10px' }}>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Onset Date</Text><Text size="2">{formatShortDate(assessment.analyzedAt)}</Text></Box>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Visit Date</Text><Text size="2">{formatShortDate(assessment.analyzedAt)}</Text></Box>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Length</Text><Text size="2">{assessment.estimatedDimensions.lengthCm}</Text></Box>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Width</Text><Text size="2">{assessment.estimatedDimensions.widthCm}</Text></Box>
+            <Box style={{ gridColumn: 'span 2' }}><Text size="1" weight="bold" style={labelStyle}>Primary Location</Text><Text size="2">{assessment.woundType}</Text></Box>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Primary Type</Text><Text size="2" style={{ textTransform: 'capitalize' }}>{assessment.woundDepth.replace(/_/g, ' ')}</Text></Box>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Secondary Type</Text><Text size="2" style={{ textTransform: 'capitalize' }}>{assessment.healingPhase.replace(/_/g, ' ')}</Text></Box>
+            <Box style={{ gridColumn: 'span 2' }}><Text size="1" weight="bold" style={labelStyle}>Color Composition</Text><Text size="2">{assessment.woundBed.split('.')[0].trim()}</Text></Box>
+            <Box style={{ gridColumn: 'span 2' }}><Text size="1" weight="bold" style={labelStyle}>Diagnosis</Text><Text size="2">{assessment.diagnosis}</Text></Box>
+            <Box style={{ gridColumn: 'span 2' }}><Text size="1" weight="bold" style={labelStyle}>Severity</Text><SeverityBadge severity={assessment.severity} /></Box>
+          </Grid>
+        </Box>
+
+        {/* 3. Red Flags */}
+        {hasRedFlags && (
+          <Box style={{ borderLeft: '4px solid #EF4444', background: '#FEF2F2', padding: '12pt', marginBottom: '16pt', borderRadius: '4px' }}>
+            <Text weight="bold" size="2" className="print-section-heading" style={{ color: '#991B1B', display: 'block', marginBottom: '6pt' }}>Red Flags Requiring Urgent Attention</Text>
+            {assessment.redFlags.map((flag, i) => (
+              <Text key={i} size="2" style={{ display: 'block', color: '#7F1D1D' }}>• {flag}</Text>
+            ))}
+          </Box>
+        )}
+
+        {/* 4. Clinical Diagnosis */}
+        <Box style={{ marginBottom: '16pt' }}>
+          <Heading size="4" className="print-section-heading">Clinical Diagnosis</Heading>
+          <Text size="2" weight="bold" style={{ display: 'block', marginBottom: '4pt' }}>{assessment.diagnosis}</Text>
+          <Divider />
+          <Text size="1" weight="bold" style={{ ...labelStyle, marginTop: '8pt' }}>Probable Cause</Text>
+          <Text size="2" style={{ display: 'block', marginBottom: '8pt' }}>{assessment.probableCause}</Text>
+          <Text size="1" weight="bold" style={labelStyle}>Differential Diagnoses</Text>
+          <Text size="2">{assessment.differentialDiagnosis.join(', ')}</Text>
+        </Box>
+
+        {/* 5. Wound Characteristics */}
+        <Box style={{ marginBottom: '16pt' }}>
+          <Heading size="4" className="print-section-heading">Wound Characteristics</Heading>
+          <Grid columns="3" gap="3" style={{ marginBottom: '8pt' }}>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Wound Type</Text><Text size="2">{assessment.woundType}</Text></Box>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Wound Depth</Text><Text size="2" style={{ textTransform: 'capitalize' }}>{assessment.woundDepth.replace(/_/g, ' ')}</Text></Box>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Wound Stage</Text><Text size="2">{assessment.woundStage ?? 'Not staged'}</Text></Box>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Healing Phase</Text><Text size="2" style={{ textTransform: 'capitalize' }}>{assessment.healingPhase.replace(/_/g, ' ')}</Text></Box>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Exudate Amount</Text><Text size="2" style={{ textTransform: 'capitalize' }}>{assessment.exudate.amount}</Text></Box>
+            <Box><Text size="1" weight="bold" style={labelStyle}>Exudate Type</Text><Text size="2" style={{ textTransform: 'capitalize' }}>{assessment.exudate.type}</Text></Box>
+          </Grid>
+          <Text size="1" weight="bold" style={labelStyle}>Wound Bed</Text>
+          <Text size="2" style={{ display: 'block', marginBottom: '6pt' }}>{assessment.woundBed}</Text>
+          <Text size="1" weight="bold" style={labelStyle}>Periwound Skin</Text>
+          <Text size="2">{assessment.periwoundSkin}</Text>
+        </Box>
+
+        {/* 6. Infection Assessment */}
+        <Box style={{ marginBottom: '16pt' }}>
+          <Heading size="4" className="print-section-heading">Infection Assessment</Heading>
+          {hasInfection ? (
+            <Flex direction="column" gap="1">
+              <Text size="2" weight="bold" style={{ color: '#DC2626', display: 'block', marginBottom: '4pt' }}>Signs of infection detected:</Text>
+              {assessment.infectionSigns.map((sign, i) => (
+                <Text key={i} size="2" style={{ display: 'block' }}>• {sign}</Text>
+              ))}
+            </Flex>
+          ) : (
+            <Text size="2" color="green">No signs of infection observed</Text>
+          )}
+        </Box>
+
+        {/* 7. Estimated Dimensions */}
+        <Box style={{ marginBottom: '16pt' }}>
+          <Heading size="4" className="print-section-heading">Estimated Dimensions</Heading>
+          <Flex gap="4">
+            {[
+              { label: 'Length', value: assessment.estimatedDimensions.lengthCm },
+              { label: 'Width', value: assessment.estimatedDimensions.widthCm },
+              { label: 'Depth', value: assessment.estimatedDimensions.depthCm },
+            ].map((dim) => (
+              <Box key={dim.label} style={{ textAlign: 'center', padding: '8pt 16pt', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
+                <Text size="4" weight="bold" style={{ display: 'block' }}>{dim.value}</Text>
+                <Text size="1" color="gray">{dim.label}</Text>
+              </Box>
+            ))}
+          </Flex>
+          <Text size="1" color="gray" style={{ display: 'block', marginTop: '6pt' }}>{assessment.estimatedDimensions.note}</Text>
+        </Box>
+
+        {/* 8. Immediate Actions */}
+        <Box style={{ marginBottom: '16pt' }}>
+          <Heading size="4" className="print-section-heading">Immediate Actions</Heading>
+          {assessment.immediateActions.map((action, i) => (
+            <Text key={i} size="2" style={{ display: 'block', marginBottom: '4pt' }}>{i + 1}. {action}</Text>
+          ))}
+        </Box>
+
+        {/* 9. Dressing Recommendations */}
+        <Box style={{ marginBottom: '16pt' }}>
+          <Heading size="4" className="print-section-heading">Dressing Recommendations</Heading>
+          {assessment.dressingSuggestions.map((s, i) => (
+            <Text key={i} size="2" style={{ display: 'block', marginBottom: '4pt' }}>✓ {s}</Text>
+          ))}
+        </Box>
+
+        {/* 10. Follow-Up & Referrals */}
+        <Box style={{ marginBottom: '16pt' }}>
+          <Heading size="4" className="print-section-heading">Follow-Up & Referrals</Heading>
+          <Text size="1" weight="bold" style={labelStyle}>Follow-Up Timeline</Text>
+          <Text size="2" style={{ display: 'block', marginBottom: '8pt' }}>{assessment.followUpTimeline}</Text>
+          <Text size="1" weight="bold" style={labelStyle}>Referral Recommendations</Text>
+          {assessment.referralRecommendations.length > 0 ? (
+            assessment.referralRecommendations.map((ref, i) => (
+              <Text key={i} size="2" style={{ display: 'block', marginBottom: '2pt' }}>→ {ref}</Text>
+            ))
+          ) : (
+            <Text size="2" color="gray">No referrals needed at this time.</Text>
+          )}
+        </Box>
+
+        {/* 11. Additional Workup */}
+        <Box style={{ marginBottom: '16pt' }}>
+          <Heading size="4" className="print-section-heading">Additional Workup</Heading>
+          {assessment.additionalWorkup.length > 0 ? (
+            assessment.additionalWorkup.map((item, i) => (
+              <Text key={i} size="2" style={{ display: 'block', marginBottom: '2pt' }}>• {item}</Text>
+            ))
+          ) : (
+            <Text size="2" color="gray">No additional workup required at this time.</Text>
+          )}
+        </Box>
+
+        {/* 12. Disclaimer */}
+        <Box style={{ borderTop: '1px solid #d1d5db', paddingTop: '8pt', marginTop: '16pt' }}>
+          <Text size="1" color="gray">{assessment.disclaimer}</Text>
+        </Box>
+      </Box>
     </Flex>
   )
 }
